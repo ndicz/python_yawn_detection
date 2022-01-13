@@ -1,0 +1,201 @@
+from cvzone.FaceMeshModule import FaceMeshDetector
+import cv2
+
+
+import math
+
+import time
+import csv
+
+time_interval = 0
+time_prev = 0
+
+filename = 'log.csv'
+
+
+fx=0
+fy=0
+
+fx1=0
+fy1=0
+
+fx2=0
+fy2=0
+
+fx3=0
+fy3=0
+
+fx4=0
+fy4=0
+
+fx5=0
+fy5=0
+
+fx6=0
+fy6=0
+
+fx7=0
+fy7=0
+
+fx8=0
+fy8=0
+mouth_x=0
+mouth_y=0
+
+l_eye_val = 0
+r_eye_val = 0
+fx9 = 0
+fy9 = 0
+
+fx10=0
+fy10=0
+
+fx11=0
+fy11=0
+
+fx12=0
+fy12=0
+
+
+fx_imaginer = 0
+fy_imaginer = 0
+
+
+face_length = 0
+face_degree = 0
+
+cap = cv2.VideoCapture(0)
+cap1 = cv2.VideoCapture(0)
+
+cap.set(3,800)
+cap.set(4,720)
+detector = FaceMeshDetector(0.5)
+
+
+filename = 'log.csv'
+
+ngantuk_state = 0
+ngantuk_state_prev = 0
+
+ngantuk_count = 0
+
+with open(filename, 'a') as csvfile:
+            print ("write")
+            # creating a csv writer object
+            csvwriter = csv.writer(csvfile)
+      
+            # writing the fields
+            csvwriter.writerow(['mata', 'mulut'])
+
+
+while True:
+    
+    success, img = cap.read()
+    success, img2 = cap.read()
+    img, faces = detector.findFaceMesh(img)
+    cv2.putText(img, str("SETPOINT BALL"), (0, 500), cv2.FONT_HERSHEY_PLAIN, 2.5, (0,0,0), 3)
+    if faces:
+        fx,fy=faces[0][410]
+        fx1,fy1 = faces[0][186]
+        fx2,fy2 = faces[0][0]
+        fx3,fy3 = faces[0][17]
+        fx4,fy4 = faces[0][378]
+        fx5,fy5 = faces[0][159]
+        fx6,fy6 = faces[0][145]
+        fx7,fy7 = faces[0][386]
+        fx8,fy8 = faces[0][374]
+        
+        fx9,fy9 = faces[0][234]
+        
+        fx10,fy10 = faces[0][347]
+        
+        fx11,fy11 = faces[0][10]
+        fx12,fy12 = faces[0][152]
+        
+        fx_imaginer = fx11
+        fy_imaginer = fy12
+        imaginer_length = 0
+        #print(faces[0][30])
+        
+        #cv2.circle(img, (fx11, fy11), 10, (0, 0, 0), cv2.FILLED)
+        cv2.circle(img, (fx11, fy12), 10, (0, 0, 0), cv2.FILLED)
+        cv2.line(img, (fx, fy),(fx1, fy1), (255, 255, 255), 3)
+        mouth_x = math.sqrt(pow((fx1 - fx), 2) + pow((fy1 - fy), 2))
+        mouth_y = math.sqrt(pow((fx3 - fx2), 2) + pow((fy3 - fy2), 2))
+        l_eye_val = math.sqrt(pow((fx5 - fx6), 2) + pow((fy5 - fy6), 2))
+        r_eye_val = math.sqrt(pow((fx7 - fx8), 2) + pow((fy7 - fy8), 2))
+        face_length = math.sqrt(pow((fx12 - fx11), 2) + pow((fy12 - fy11), 2))
+        
+        #print(face_length)
+       
+        #print(mouth_y)
+        cv2.line(img, (fx2, fy2),(fx3, fy3), (255, 255, 255), 3)
+        
+        cv2.putText(img, str("x mulut :"), (fx4, fy4), cv2.FONT_HERSHEY_PLAIN, 1, (255,255,255), 2)
+        cv2.putText(img, str(round(mouth_x,0)), (fx4 + 80, fy4), cv2.FONT_HERSHEY_PLAIN, 1, (255,255,255), 2)
+        
+        cv2.putText(img, str("y mulut :"), (fx4, fy4+20), cv2.FONT_HERSHEY_PLAIN, 1, (255,255,255), 2)
+        cv2.putText(img, str(round(mouth_y,0)), (fx4 + 80, fy4+20), cv2.FONT_HERSHEY_PLAIN, 1, (255,255,255), 2)
+        
+        cv2.putText(img, str("L eye val :"), (fx9, fy9), cv2.FONT_HERSHEY_PLAIN, 1, (255,255,255), 2)
+        cv2.putText(img, str(round(l_eye_val,0)), (fx9, fy9 +20), cv2.FONT_HERSHEY_PLAIN, 1, (255,255,255), 2)
+        
+        cv2.putText(img, str("R eye val :"), (fx10, fy10), cv2.FONT_HERSHEY_PLAIN, 1, (255,255,255), 2)
+        cv2.putText(img, str(round(r_eye_val,0)), (fx10, fy10+20), cv2.FONT_HERSHEY_PLAIN, 1, (255,255,255), 2)
+        
+        cv2.line(img, (fx5, fy5),(fx6, fy6), (255, 0, 0), 3)
+        cv2.line(img, (fx7, fy7),(fx8, fy8), (255, 255, 255), 3)
+        
+        cv2.line(img, (fx11, fy11),(fx12, fy12), (255, 255, 255), 3)
+        cv2.line(img, (fx12, fy12),(fx_imaginer, fy_imaginer), (255, 255, 255), 3)
+        imaginer_length = math.sqrt(pow((fx12 - fx_imaginer), 2) + pow((fy12 - fy_imaginer), 2))
+        
+        cv2.putText(img, str(round(imaginer_length,0)), (fx12, fy12 + 20), cv2.FONT_HERSHEY_PLAIN, 1, (255,255,255), 2)
+        cv2.putText(img, str(round(face_length,0)), (fx12, fy12 + 40), cv2.FONT_HERSHEY_PLAIN, 1, (255,255,255), 2)
+        
+        face_degree = math.degrees (math.acos((imaginer_length/face_length)))
+        cv2.putText(img, str(round(face_degree,0)), (fx12, fy12 + 60), cv2.FONT_HERSHEY_PLAIN, 1, (255,255,255), 2)
+        
+       
+        if ((mouth_x > 80) and (mouth_y > 50) and (l_eye_val < 12) and (r_eye_val < 12) or (face_degree <70) ) :
+        #if ((face_degree < 70)) :
+            cv2.putText(img, str("ngantuk"), (0, 100), cv2.FONT_HERSHEY_PLAIN, 2.5, (255,0,0), 3)
+            #cv2.putText(img, str("SMILE"), (0, 0), cv2.FONT_HERSHEY_PLAIN, 2.5, (0,0,0), 3)
+            #print("ngantuk")
+            ngantuk_state = 1
+        else:
+            cv2.putText(img, str("tidak ngantuk"), (0, 100), cv2.FONT_HERSHEY_PLAIN, 2.5, (0,0,255), 3)
+            #cv2.putText(img, str("NO SMILE"), (0, 0), cv2.FONT_HERSHEY_PLAIN, 2.5, (0,0,0), 3)
+            #print("tidak ngantuk")
+            ngantuk_state = 0
+            
+    cv2.imshow("stress detector", img)
+    cv2.imshow("no imaginer", img2)
+    if cv2.waitKey(1) & 0xFF == ord('q'):
+        break
+    
+    time_interval = time.time() - time_prev
+    #print(time_interval)
+    
+    
+    if time_interval > 1 :
+        
+        if ngantuk_state != ngantuk_state_prev:
+            ngantuk_count = ngantuk_count+0.5
+            if ngantuk_state == 1:  
+                cv2.imwrite(str(str(ngantuk_count) + '.png'),img2)
+            print(int(ngantuk_count))
+        ngantuk_state_prev = ngantuk_state
+        
+        
+        ngantuk_state_prev = ngantuk_state
+        with open(filename, 'a') as csvfile:
+            #print (str(l_eye_val) +str(" ") + str(mouth_x))
+            # creating a csv writer object
+            csvwriter = csv.writer(csvfile)
+      
+            # writing the fields
+            csvwriter.writerow([str(l_eye_val), str(mouth_x)])
+        time_prev = time.time()
+cap.release()
+cv2.destroyAllWindows()
